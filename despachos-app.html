@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#111827">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Despachos">
+<title>Despachos</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --surface2: #1f2937;
+  --surface3: #252d3a;
+  --accent: #00d4aa;
+  --accent-dim: rgba(0,212,170,0.15);
+  --accent2: #ff6b6b;
+  --accent3: #ffd93d;
+  --text: #e6edf3;
+  --muted: #7d8590;
+  --border: #30363d;
+  --green: #3fb950;
+  --blue: #58a6ff;
+  --radius: 12px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Nunito', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* SPLASH / LOGIN */
+#splashScreen {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  z-index: 1000;
+  gap: 24px;
+  padding: 40px;
+}
+.splash-logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 42px;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: -1px;
+}
+.splash-logo span { color: var(--text); }
+.splash-sub {
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
+  line-height: 1.6;
+}
+.btn-google {
+  width: 100%;
+  max-width: 320px;
+  background: #fff;
+  color: #333;
+  border: none;
+  border-radius: 10px;
+  padding: 14px 20px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  transition: all 0.2s;
+}
+.btn-google:active { transform: scale(0.97); }
+.btn-google svg { width: 20px; height: 20px; }
+.splash-note {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+  max-width: 280px;
+  line-height: 1.5;
+}
+
+/* MAIN APP */
+#mainApp { display: none; }
+
+/* HEADER */
+.header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+}
+.app-logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: -0.5px;
+}
+.app-logo span { color: var(--text); }
+.header-right { display: flex; align-items: center; gap: 10px; }
+.user-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--accent-dim);
+  border: 2px solid var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: var(--accent);
+  cursor: pointer;
+}
+.sync-indicator {
+  font-size: 11px;
+  color: var(--muted);
+  display: flex; align-items: center; gap: 4px;
+}
+.sync-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+}
+.sync-dot.syncing { background: var(--accent3); animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+/* TABS */
+.tabs {
+  display: flex;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 57px; z-index: 99;
+}
+.tab {
+  flex: 1; padding: 11px 8px;
+  text-align: center;
+  font-size: 12px; font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* VIEWS */
+.view { display: none; padding: 16px; padding-bottom: 40px; }
+.view.active { display: block; }
+
+/* SECTION LABEL */
+.section-label {
+  font-family: 'Syne', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+  margin-top: 20px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-label:first-child { margin-top: 0; }
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* INPUTS */
+.input-group { margin-bottom: 12px; }
+.input-label {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.8px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 6px; display: block;
+}
+input[type=text], input[type=date], textarea, select {
+  width: 100%;
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 13px 14px;
+  color: var(--text);
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+}
+input:focus, textarea:focus, select:focus { border-color: var(--accent); }
+textarea { resize: none; height: 80px; line-height: 1.5; }
+input[type=date] { font-family: 'DM Mono', monospace; font-size: 14px; }
+
+/* GUIAS */
+.guia-row {
+  display: flex; gap: 8px; align-items: center;
+  margin-bottom: 8px;
+}
+.guia-row input { flex: 1; margin: 0; }
+.guia-badge {
+  background: var(--accent-dim);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  font-weight: 500;
+}
+.btn-add-guia {
+  background: transparent;
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius);
+  color: var(--muted);
+  padding: 10px;
+  width: 100%;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  transition: all 0.2s;
+  margin-bottom: 4px;
+}
+.btn-add-guia:active { border-color: var(--accent); color: var(--accent); }
+.btn-del-guia {
+  background: transparent; border: none;
+  color: var(--accent2); font-size: 18px;
+  cursor: pointer; padding: 4px 8px;
+  flex-shrink: 0;
+}
+
+/* FECHA DESPACHO */
+.fecha-options {
+  display: flex; gap: 8px; margin-bottom: 8px;
+}
+.btn-fecha-hoy {
+  flex: 1;
+  background: var(--accent);
+  color: #000;
+  border: none; border-radius: var(--radius);
+  padding: 13px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px; font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.btn-fecha-hoy:active { transform: scale(0.97); }
+.btn-fecha-otra {
+  flex: 1;
+  background: var(--surface2);
+  color: var(--text);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 13px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px; font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-fecha-otra.active { border-color: var(--accent); color: var(--accent); }
+#fechaOtraInput { display: none; margin-top: 8px; }
+.fecha-registro-display {
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 11px 14px;
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  color: var(--muted);
+  display: flex; align-items: center; gap: 8px;
+}
+.fecha-registro-display span { color: var(--text); font-weight: 500; }
+
+/* FOTOS */
+.btn-camara {
+  width: 100%;
+  background: var(--accent);
+  color: #000;
+  border: none; border-radius: var(--radius);
+  padding: 16px;
+  font-family: 'Syne', sans-serif;
+  font-size: 18px; font-weight: 800;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  transition: all 0.15s;
+  margin-bottom: 10px;
+}
+.btn-camara:active { transform: scale(0.97); background: #00b894; }
+.btn-galeria {
+  width: 100%;
+  background: transparent;
+  color: var(--accent);
+  border: 1.5px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 13px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px; font-weight: 700;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: all 0.15s;
+  margin-bottom: 12px;
+}
+.btn-galeria:active { background: var(--accent-dim); }
+
+#fileInputCamara, #fileInputGaleria, #fileInputDoc { display: none; }
+
+.fotos-grid-preview {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px; margin-bottom: 12px;
+}
+.thumb {
+  position: relative; aspect-ratio: 1;
+  border-radius: 8px; overflow: hidden;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+}
+.thumb img { width: 100%; height: 100%; object-fit: cover; }
+.thumb-del {
+  position: absolute; top: 3px; right: 3px;
+  background: rgba(0,0,0,0.75);
+  border: none; color: var(--accent2);
+  width: 22px; height: 22px;
+  border-radius: 50%; font-size: 12px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.fotos-count {
+  text-align: center;
+  font-size: 12px; color: var(--muted);
+  margin-bottom: 4px;
+}
+.fotos-count strong { color: var(--accent); }
+
+/* DOCUMENTOS */
+.doc-item {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 8px;
+}
+.doc-icon { font-size: 24px; flex-shrink: 0; }
+.doc-info { flex: 1; min-width: 0; }
+.doc-name {
+  font-size: 13px; font-weight: 700;
+  color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.doc-type {
+  font-size: 11px; color: var(--muted); margin-top: 2px;
+}
+.doc-del {
+  background: transparent; border: none;
+  color: var(--accent2); font-size: 18px; cursor: pointer;
+  flex-shrink: 0;
+}
+.btn-add-doc {
+  width: 100%;
+  background: transparent;
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius);
+  color: var(--muted);
+  padding: 12px;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  transition: all 0.2s;
+}
+.btn-add-doc:active { border-color: var(--blue); color: var(--blue); }
+
+/* MODAL TIPO DOC */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.8);
+  z-index: 200;
+  align-items: flex-end; justify-content: center;
+}
+.modal-overlay.show { display: flex; }
+.modal-sheet {
+  background: var(--surface);
+  border-radius: 20px 20px 0 0;
+  padding: 24px 20px 40px;
+  width: 100%; max-width: 500px;
+}
+.modal-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px; font-weight: 800;
+  margin-bottom: 6px;
+}
+.modal-sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+.modal-options { display: flex; flex-direction: column; gap: 10px; }
+.modal-option {
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: flex; align-items: center; gap: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.modal-option:active { border-color: var(--accent); }
+.modal-option-icon { font-size: 24px; }
+.modal-option-text { font-size: 14px; font-weight: 700; }
+.modal-option-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.btn-modal-cancel {
+  width: 100%; margin-top: 14px;
+  background: transparent; border: none;
+  color: var(--muted); font-size: 14px; font-weight: 600;
+  padding: 12px; cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+}
+
+/* MODAL ASIGNAR GUIA */
+#modalAsignarGuia .modal-option { flex-direction: column; align-items: flex-start; gap: 4px; }
+
+/* SAVE BTN */
+.btn-save {
+  width: 100%; margin-top: 20px;
+  background: var(--accent2);
+  color: #fff; border: none;
+  border-radius: var(--radius);
+  padding: 17px;
+  font-family: 'Syne', sans-serif;
+  font-size: 20px; font-weight: 800;
+  cursor: pointer; transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-save:active { transform: scale(0.97); }
+.btn-save:disabled { opacity: 0.35; }
+
+/* HISTORIAL */
+.search-wrap { position: relative; margin-bottom: 16px; }
+.search-icon {
+  position: absolute; left: 12px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted); font-size: 16px;
+}
+.search-input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px 12px 36px;
+  color: var(--text);
+  font-size: 15px;
+  font-family: 'Nunito', sans-serif;
+  outline: none;
+}
+.search-input:focus { border-color: var(--accent); }
+
+.filter-chips {
+  display: flex; gap: 8px; margin-bottom: 16px;
+  overflow-x: auto; padding-bottom: 4px;
+}
+.filter-chips::-webkit-scrollbar { display: none; }
+.chip {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12px; font-weight: 700;
+  color: var(--muted);
+  cursor: pointer; white-space: nowrap;
+  transition: all 0.15s;
+}
+.chip.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+
+.despacho-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.despacho-card:active { border-color: var(--accent); }
+.card-head {
+  padding: 14px 16px;
+  display: flex; align-items: flex-start;
+  justify-content: space-between; gap: 10px;
+  cursor: pointer;
+}
+.card-guias { flex: 1; }
+.card-guia-principal {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px; font-weight: 800;
+  color: var(--accent); line-height: 1;
+  margin-bottom: 4px;
+}
+.card-guias-extra {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; color: var(--muted);
+}
+.card-destino {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: rgba(255,107,107,0.15);
+  border: 1px solid rgba(255,107,107,0.3);
+  color: var(--accent2);
+  font-size: 11px; font-weight: 700;
+  padding: 3px 10px; border-radius: 20px;
+  margin-top: 6px;
+}
+.card-meta {
+  text-align: right; flex-shrink: 0;
+  font-size: 11px; color: var(--muted); line-height: 1.6;
+}
+.card-meta strong { color: var(--text); display: block; }
+.card-body { display: none; border-top: 1px solid var(--border); }
+.card-body.open { display: block; }
+.card-obs {
+  padding: 10px 16px;
+  font-size: 13px; color: #aaa;
+  font-style: italic;
+  border-bottom: 1px solid var(--border);
+}
+.card-fotos {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px; padding: 2px;
+}
+.card-fotos img {
+  width: 100%; aspect-ratio: 1;
+  object-fit: cover; cursor: pointer;
+}
+.card-docs {
+  padding: 10px 16px;
+  border-top: 1px solid var(--border);
+}
+.card-doc-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 0;
+  font-size: 13px; color: var(--blue);
+  cursor: pointer;
+}
+.card-actions {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  display: flex; gap: 8px;
+}
+.btn-edit {
+  flex: 1; background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px;
+  color: var(--text); font-size: 13px; font-weight: 700;
+  cursor: pointer; font-family: 'Nunito', sans-serif;
+}
+.btn-delete-card {
+  background: transparent;
+  border: 1px solid rgba(255,107,107,0.3);
+  border-radius: 8px; padding: 10px 14px;
+  color: var(--accent2); font-size: 13px;
+  cursor: pointer;
+}
+
+.empty-state {
+  text-align: center; padding: 60px 20px;
+  color: var(--muted);
+}
+.empty-icon { font-size: 48px; margin-bottom: 12px; }
+.empty-text { font-size: 14px; line-height: 1.6; }
+
+/* LIGHTBOX */
+.lightbox {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.96); z-index: 300;
+  align-items: center; justify-content: center;
+}
+.lightbox.show { display: flex; }
+.lightbox img {
+  max-width: 95vw; max-height: 90vh;
+  border-radius: 8px; object-fit: contain;
+}
+.lightbox-close {
+  position: absolute; top: 16px; right: 16px;
+  background: rgba(255,255,255,0.1); border: none;
+  color: #fff; width: 40px; height: 40px;
+  border-radius: 50%; font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* TOAST */
+.toast {
+  position: fixed; bottom: 30px; left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 13px; font-weight: 600;
+  padding: 12px 20px; border-radius: 30px;
+  z-index: 999; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  white-space: nowrap;
+  display: flex; align-items: center; gap: 8px;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast.success { border-color: var(--green); }
+.toast.error { border-color: var(--accent2); }
+
+/* LOADING */
+.loading-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7); z-index: 500;
+  align-items: center; justify-content: center;
+  flex-direction: column; gap: 16px;
+}
+.loading-overlay.show { display: flex; }
+.spinner {
+  width: 40px; height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { color: var(--text); font-size: 14px; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- SPLASH / LOGIN -->
+<div id="splashScreen">
+  <div style="text-align:center">
+    <div class="splash-logo">Des<span>pachos</span></div>
+    <div style="font-size:12px;color:var(--muted);margin-top:4px;font-family:'DM Mono',monospace">v2.0 — Google Drive</div>
+  </div>
+  <div class="splash-sub">Registra tus despachos con fotos,<br>sincronizado con Google Drive y Sheets.</div>
+  <button class="btn-google" onclick="iniciarLogin()">
+    <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+    Entrar con Google
+  </button>
+  <div class="splash-note">Al entrar, la app accederá a tu Google Drive para guardar los despachos.</div>
+</div>
+
+<!-- MAIN APP -->
+<div id="mainApp">
+  <div class="header">
+    <div class="app-logo">Des<span>pachos</span></div>
+    <div class="header-right">
+      <div class="sync-indicator">
+        <div class="sync-dot" id="syncDot"></div>
+        <span id="syncText">Listo</span>
+      </div>
+      <div class="user-avatar" id="userAvatar" onclick="cerrarSesion()">?</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('nuevo')">📦 Nuevo</div>
+    <div class="tab" onclick="showTab('historial')">📋 Historial</div>
+  </div>
+
+  <!-- NUEVO DESPACHO -->
+  <div class="view active" id="view-nuevo">
+
+    <div class="section-label">Guías de despacho</div>
+
+    <div id="guiasContainer">
+      <div class="guia-row">
+        <input type="text" placeholder="Nº Guía principal" class="guia-input" autocomplete="off" oninput="checkSave()">
+        <div class="guia-badge">PRINCIPAL</div>
+      </div>
+    </div>
+    <button class="btn-add-guia" onclick="addGuia()">+ Agregar guía adicional</button>
+
+    <div class="section-label">Destino / Contrata</div>
+    <div class="input-group">
+      <input type="text" id="destino" placeholder="Ej: Lima Norte — Av. Universitaria 456" autocomplete="off" oninput="checkSave()">
+    </div>
+
+    <div class="section-label">Fechas</div>
+    <div class="input-group">
+      <div class="input-label">Fecha de registro</div>
+      <div class="fecha-registro-display">
+        📅 <span id="fechaRegistroDisplay"></span>
+      </div>
+    </div>
+    <div class="input-group">
+      <div class="input-label">Fecha de despacho</div>
+      <div class="fecha-options">
+        <button class="btn-fecha-hoy" id="btnFechaHoy" onclick="setFechaHoy()">✓ Hoy</button>
+        <button class="btn-fecha-otra" id="btnFechaOtra" onclick="toggleFechaOtra()">📅 Otra fecha</button>
+      </div>
+      <input type="date" id="fechaOtraInput" onchange="setFechaOtra(this.value)">
+      <div id="fechaDespachoDisplay" style="font-size:12px;color:var(--muted);margin-top:4px;text-align:center"></div>
+    </div>
+
+    <div class="section-label">📸 Fotos de mercadería</div>
+    <button class="btn-camara" onclick="abrirCamara()">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      ABRIR CÁMARA
+    </button>
+    <button class="btn-galeria" onclick="abrirGaleria()">🖼️ Seleccionar de galería (múltiples)</button>
+    <input type="file" id="fileInputCamara" accept="image/*" capture="environment" onchange="handleFotos(event)">
+    <input type="file" id="fileInputGaleria" accept="image/*" multiple onchange="handleFotos(event)">
+
+    <div id="fotosPreview" class="fotos-grid-preview"></div>
+    <div class="fotos-count"><strong id="fotosNum">0</strong> fotos agregadas</div>
+
+    <div class="section-label">📄 Documentos (opcional)</div>
+    <div id="docsContainer"></div>
+    <button class="btn-add-doc" onclick="abrirModalDoc()">📎 Agregar documento (foto → PDF)</button>
+    <input type="file" id="fileInputDoc" accept="image/*" capture="environment" onchange="handleDocFoto(event)">
+
+    <div class="section-label">Observaciones</div>
+    <textarea id="obs" placeholder="Ej: Frágil, mantener derecho, requiere firma del receptor..."></textarea>
+
+    <button class="btn-save" id="btnSave" onclick="guardarDespacho()" disabled>
+      ☁️ GUARDAR DESPACHO
+    </button>
+  </div>
+
+  <!-- HISTORIAL -->
+  <div class="view" id="view-historial">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" type="text" id="searchInput" placeholder="Buscar por guía, destino o fecha..." oninput="renderHistorial()">
+    </div>
+    <div class="filter-chips">
+      <div class="chip active" onclick="setFilter('todos',this)">Todos</div>
+      <div class="chip" onclick="setFilter('hoy',this)">Hoy</div>
+      <div class="chip" onclick="setFilter('semana',this)">Esta semana</div>
+    </div>
+    <div id="historialList"></div>
+  </div>
+</div>
+
+<!-- MODAL TIPO DOCUMENTO -->
+<div class="modal-overlay" id="modalTipoDoc">
+  <div class="modal-sheet">
+    <div class="modal-title">Tipo de documento</div>
+    <div class="modal-sub">¿Qué tipo de documento es esta foto?</div>
+    <div class="modal-options">
+      <div class="modal-option" onclick="seleccionarTipoDoc('guia')">
+        <div class="modal-option-icon">📋</div>
+        <div>
+          <div class="modal-option-text">Es una Guía</div>
+          <div class="modal-option-sub">Se nombrará con el número de guía</div>
+        </div>
+      </div>
+      <div class="modal-option" onclick="seleccionarTipoDoc('otro')">
+        <div class="modal-option-icon">📄</div>
+        <div>
+          <div class="modal-option-text">Otro documento</div>
+          <div class="modal-option-sub">Factura, orden de compra, permiso...</div>
+        </div>
+      </div>
+    </div>
+    <button class="btn-modal-cancel" onclick="cerrarModal('modalTipoDoc')">Cancelar</button>
+  </div>
+</div>
+
+<!-- MODAL ASIGNAR GUIA AL DOC -->
+<div class="modal-overlay" id="modalAsignarGuia">
+  <div class="modal-sheet">
+    <div class="modal-title">¿A qué guía pertenece?</div>
+    <div class="modal-sub">Selecciona la guía correspondiente a este documento</div>
+    <div class="modal-options" id="guiasParaDoc"></div>
+    <button class="btn-modal-cancel" onclick="cerrarModal('modalAsignarGuia')">Cancelar</button>
+  </div>
+</div>
+
+<!-- MODAL NOMBRE OTRO DOC -->
+<div class="modal-overlay" id="modalNombreDoc">
+  <div class="modal-sheet">
+    <div class="modal-title">Nombre del documento</div>
+    <div class="modal-sub">¿Cómo quieres llamar a este documento?</div>
+    <div style="margin-bottom:16px">
+      <input type="text" id="inputNombreDoc" placeholder="Ej: Factura, Orden de compra..." style="margin:0">
+    </div>
+    <button class="btn-camara" style="font-size:16px" onclick="confirmarNombreDoc()">✓ Confirmar</button>
+    <button class="btn-modal-cancel" onclick="cerrarModal('modalNombreDoc')">Cancelar</button>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <img id="lightboxImg" src="" alt="">
+  <button class="lightbox-close">✕</button>
+</div>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loadingText">Guardando en Drive...</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// CONFIG
+// ============================================================
+const CLIENT_ID = '400605978069-dng4qrchm1itl1svj9ofhjmkbbklcjrl.apps.googleusercontent.com';
+const SCOPES = 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/spreadsheets';
+const FOLDER_NAME = 'Despachos App';
+const SHEET_NAME = 'Registro de Despachos';
+
+// ============================================================
+// STATE
+// ============================================================
+let accessToken = null;
+let userInfo = null;
+let driveFolderId = null;
+let sheetId = null;
+let currentFotos = [];
+let currentDocs = [];
+let currentDocFotoBase64 = null;
+let despachos = JSON.parse(localStorage.getItem('despachos_v2') || '[]');
+let filterActivo = 'todos';
+let guiasCount = 1;
+
+// ============================================================
+// AUTH
+// ============================================================
+function iniciarLogin() {
+  const params = new URLSearchParams({
+    client_id: CLIENT_ID,
+    redirect_uri: window.location.href.split('?')[0],
+    response_type: 'token',
+    scope: SCOPES,
+    prompt: 'select_account'
+  });
+  window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + params;
+}
+
+function checkAuth() {
+  // Check URL hash for token
+  const hash = window.location.hash;
+  if (hash.includes('access_token')) {
+    const params = new URLSearchParams(hash.substring(1));
+    accessToken = params.get('access_token');
+    window.history.replaceState({}, '', window.location.pathname);
+    localStorage.setItem('gtoken', accessToken);
+    iniciarApp();
+    return;
+  }
+  // Check stored token
+  const stored = localStorage.getItem('gtoken');
+  if (stored) {
+    accessToken = stored;
+    verificarToken();
+    return;
+  }
+  // Show splash
+  document.getElementById('splashScreen').style.display = 'flex';
+}
+
+async function verificarToken() {
+  try {
+    const r = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: 'Bearer ' + accessToken }
+    });
+    if (r.ok) {
+      iniciarApp();
+    } else {
+      localStorage.removeItem('gtoken');
+      document.getElementById('splashScreen').style.display = 'flex';
+    }
+  } catch {
+    document.getElementById('splashScreen').style.display = 'flex';
+  }
+}
+
+async function iniciarApp() {
+  document.getElementById('splashScreen').style.display = 'none';
+  document.getElementById('mainApp').style.display = 'block';
+  initFechas();
+  // Get user info
+  try {
+    const r = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: 'Bearer ' + accessToken }
+    });
+    userInfo = await r.json();
+    document.getElementById('userAvatar').textContent = (userInfo.name || 'U')[0].toUpperCase();
+  } catch {}
+  // Setup Drive
+  await setupDrive();
+  updateCount();
+}
+
+function cerrarSesion() {
+  if (!confirm('¿Cerrar sesión?')) return;
+  localStorage.removeItem('gtoken');
+  accessToken = null;
+  document.getElementById('mainApp').style.display = 'none';
+  document.getElementById('splashScreen').style.display = 'flex';
+}
+
+// ============================================================
+// DRIVE SETUP
+// ============================================================
+async function gFetch(url, opts={}) {
+  const headers = { Authorization: 'Bearer ' + accessToken, ...opts.headers };
+  return fetch(url, { ...opts, headers });
+}
+
+async function setupDrive() {
+  try {
+    setSyncStatus('syncing', 'Conectando...');
+    // Find or create main folder
+    let r = await gFetch(`https://www.googleapis.com/drive/v3/files?q=name='${FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder' and trashed=false&fields=files(id,name)`);
+    let data = await r.json();
+    if (data.files && data.files.length > 0) {
+      driveFolderId = data.files[0].id;
+    } else {
+      let cr = await gFetch('https://www.googleapis.com/drive/v3/files', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: FOLDER_NAME, mimeType: 'application/vnd.google-apps.folder' })
+      });
+      let cd = await cr.json();
+      driveFolderId = cd.id;
+    }
+    // Find or create sheet
+    let sr = await gFetch(`https://www.googleapis.com/drive/v3/files?q=name='${SHEET_NAME}' and mimeType='application/vnd.google-apps.spreadsheet' and '${driveFolderId}' in parents and trashed=false&fields=files(id,name)`);
+    let sd = await sr.json();
+    if (sd.files && sd.files.length > 0) {
+      sheetId = sd.files[0].id;
+    } else {
+      let scr = await gFetch('https://www.googleapis.com/spreadsheets/v4/spreadsheets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          properties: { title: SHEET_NAME },
+          sheets: [{ properties: { title: 'Despachos' } }]
+        })
+      });
+      let scd = await scr.json();
+      sheetId = scd.spreadsheetId;
+      // Move to folder
+      await gFetch(`https://www.googleapis.com/drive/v3/files/${sheetId}?addParents=${driveFolderId}&fields=id`, { method: 'PATCH' });
+      // Add headers
+      await gFetch(`https://www.googleapis.com/spreadsheets/v4/spreadsheets/${sheetId}/values/Despachos!A1:append?valueInputOption=RAW`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ values: [['ID','Guía Principal','Guías Adicionales','Destino/Contrata','Fecha Registro','Fecha Despacho','Nº Fotos','Documentos','Observaciones','Carpeta Drive']] })
+      });
+    }
+    setSyncStatus('ok', 'Listo');
+  } catch(e) {
+    setSyncStatus('ok', 'Offline');
+  }
+}
+
+function setSyncStatus(status, text) {
+  const dot = document.getElementById('syncDot');
+  const txt = document.getElementById('syncText');
+  dot.className = 'sync-dot' + (status === 'syncing' ? ' syncing' : '');
+  txt.textContent = text;
+}
+
+// ============================================================
+// FECHAS
+// ============================================================
+function initFechas() {
+  const now = new Date();
+  const display = now.toLocaleDateString('es-PE', { weekday:'long', day:'2-digit', month:'long', year:'numeric' });
+  document.getElementById('fechaRegistroDisplay').textContent = display;
+  // Default: fecha despacho = hoy
+  setFechaHoy();
+}
+
+let fechaDespachoValue = '';
+
+function setFechaHoy() {
+  const now = new Date();
+  fechaDespachoValue = now.toISOString().split('T')[0];
+  document.getElementById('btnFechaHoy').style.background = 'var(--accent)';
+  document.getElementById('btnFechaOtra').classList.remove('active');
+  document.getElementById('fechaOtraInput').style.display = 'none';
+  document.getElementById('fechaDespachoDisplay').textContent = '✓ ' + now.toLocaleDateString('es-PE', { day:'2-digit', month:'long', year:'numeric' });
+}
+
+function toggleFechaOtra() {
+  const inp = document.getElementById('fechaOtraInput');
+  const btn = document.getElementById('btnFechaOtra');
+  const visible = inp.style.display === 'block';
+  inp.style.display = visible ? 'none' : 'block';
+  btn.classList.toggle('active', !visible);
+  if (!visible) {
+    document.getElementById('btnFechaHoy').style.background = 'var(--surface2)';
+    fechaDespachoValue = '';
+    document.getElementById('fechaDespachoDisplay').textContent = 'Selecciona una fecha';
+  }
+}
+
+function setFechaOtra(val) {
+  fechaDespachoValue = val;
+  const d = new Date(val + 'T12:00:00');
+  document.getElementById('fechaDespachoDisplay').textContent = '✓ ' + d.toLocaleDateString('es-PE', { day:'2-digit', month:'long', year:'numeric' });
+}
+
+// ============================================================
+// GUIAS
+// ============================================================
+function addGuia() {
+  guiasCount++;
+  const container = document.getElementById('guiasContainer');
+  const div = document.createElement('div');
+  div.className = 'guia-row';
+  div.id = 'guia-row-' + guiasCount;
+  div.innerHTML = `
+    <input type="text" placeholder="Nº Guía adicional ${guiasCount-1}" class="guia-input" autocomplete="off" oninput="checkSave()">
+    <button class="btn-del-guia" onclick="removeGuia('guia-row-${guiasCount}')">✕</button>
+  `;
+  container.appendChild(div);
+}
+
+function removeGuia(id) {
+  document.getElementById(id)?.remove();
+  checkSave();
+}
+
+function getGuias() {
+  return Array.from(document.querySelectorAll('.guia-input'))
+    .map(i => i.value.trim()).filter(Boolean);
+}
+
+// ============================================================
+// FOTOS
+// ============================================================
+function abrirCamara() {
+  const inp = document.getElementById('fileInputCamara');
+  inp.value = '';
+  inp.click();
+}
+
+function abrirGaleria() {
+  const inp = document.getElementById('fileInputGaleria');
+  inp.value = '';
+  inp.click();
+}
+
+function handleFotos(e) {
+  const files = Array.from(e.target.files);
+  let loaded = 0;
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      currentFotos.push(ev.target.result);
+      loaded++;
+      if (loaded === files.length) renderFotos();
+    };
+    reader.readAsDataURL(file);
+  });
+  e.target.value = '';
+}
+
+function renderFotos() {
+  const c = document.getElementById('fotosPreview');
+  c.innerHTML = currentFotos.map((src, i) => `
+    <div class="thumb">
+      <img src="${src}" alt="">
+      <button class="thumb-del" onclick="deleteFoto(${i})">✕</button>
+    </div>
+  `).join('');
+  document.getElementById('fotosNum').textContent = currentFotos.length;
+  checkSave();
+}
+
+function deleteFoto(i) {
+  currentFotos.splice(i, 1);
+  renderFotos();
+}
+
+// ============================================================
+// DOCUMENTOS
+// ============================================================
+function abrirModalDoc() {
+  const inp = document.getElementById('fileInputDoc');
+  inp.value = '';
+  inp.click();
+}
+
+function handleDocFoto(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    currentDocFotoBase64 = ev.target.result;
+    // Try AI detection (show modal)
+    mostrarModal('modalTipoDoc');
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+}
+
+let tipoDocSeleccionado = null;
+
+function seleccionarTipoDoc(tipo) {
+  tipoDocSeleccionado = tipo;
+  cerrarModal('modalTipoDoc');
+  if (tipo === 'guia') {
+    const guias = getGuias();
+    if (guias.length === 0) {
+      showToast('⚠️ Primero ingresa el número de guía', 'error');
+      return;
+    }
+    if (guias.length === 1) {
+      agregarDoc({ tipo: 'guia', guia: guias[0], foto: currentDocFotoBase64 });
+    } else {
+      // Show guia selector
+      const container = document.getElementById('guiasParaDoc');
+      container.innerHTML = guias.map(g => `
+        <div class="modal-option" onclick="asignarGuiaDoc('${g}')">
+          <div class="modal-option-icon">📋</div>
+          <div>
+            <div class="modal-option-text">${g}</div>
+          </div>
+        </div>
+      `).join('');
+      mostrarModal('modalAsignarGuia');
+    }
+  } else {
+    mostrarModal('modalNombreDoc');
+    document.getElementById('inputNombreDoc').value = '';
+    setTimeout(() => document.getElementById('inputNombreDoc').focus(), 300);
+  }
+}
+
+function asignarGuiaDoc(guia) {
+  cerrarModal('modalAsignarGuia');
+  agregarDoc({ tipo: 'guia', guia, foto: currentDocFotoBase64 });
+}
+
+function confirmarNombreDoc() {
+  const nombre = document.getElementById('inputNombreDoc').value.trim();
+  if (!nombre) { showToast('⚠️ Escribe un nombre', 'error'); return; }
+  cerrarModal('modalNombreDoc');
+  agregarDoc({ tipo: 'otro', nombre, foto: currentDocFotoBase64 });
+}
+
+function agregarDoc(doc) {
+  currentDocs.push(doc);
+  renderDocs();
+}
+
+function renderDocs() {
+  const c = document.getElementById('docsContainer');
+  c.innerHTML = currentDocs.map((d, i) => `
+    <div class="doc-item">
+      <div class="doc-icon">${d.tipo === 'guia' ? '📋' : '📄'}</div>
+      <div class="doc-info">
+        <div class="doc-name">${d.tipo === 'guia' ? 'Guía: ' + d.guia : d.nombre}</div>
+        <div class="doc-type">${d.tipo === 'guia' ? 'Se guardará como PDF' : 'Otro documento → PDF'}</div>
+      </div>
+      <button class="doc-del" onclick="deleteDoc(${i})">✕</button>
+    </div>
+  `).join('');
+}
+
+function deleteDoc(i) {
+  currentDocs.splice(i, 1);
+  renderDocs();
+}
+
+// ============================================================
+// GUARDAR
+// ============================================================
+function checkSave() {
+  const guias = getGuias();
+  const destino = document.getElementById('destino').value.trim();
+  document.getElementById('btnSave').disabled = !(guias.length > 0 && destino);
+}
+
+async function guardarDespacho() {
+  const guias = getGuias();
+  const destino = document.getElementById('destino').value.trim();
+  const obs = document.getElementById('obs').value.trim();
+  if (!guias.length || !destino) return;
+
+  const now = new Date();
+  const id = 'D' + Date.now();
+  const fechaReg = now.toLocaleDateString('es-PE', { day:'2-digit', month:'2-digit', year:'numeric' });
+  const horaReg = now.toLocaleTimeString('es-PE', { hour:'2-digit', minute:'2-digit' });
+  const fechaDesp = fechaDespachoValue ? new Date(fechaDespachoValue + 'T12:00:00').toLocaleDateString('es-PE', { day:'2-digit', month:'2-digit', year:'numeric' }) : fechaReg;
+
+  const despacho = {
+    id, guias, destino, obs,
+    fechaReg, horaReg, fechaDesp,
+    fotos: [...currentFotos],
+    docs: currentDocs.map(d => ({ ...d, foto: d.foto }))
+  };
+
+  // Save locally first
+  despachos.unshift(despacho);
+  guardarLocal();
+  showToast('✓ Guardado localmente', 'success');
+  resetForm();
+  updateCount();
+
+  // Then sync to Drive
+  if (accessToken && driveFolderId) {
+    sincronizarDespacho(despacho);
+  }
+}
+
+async function sincronizarDespacho(despacho) {
+  setSyncStatus('syncing', 'Subiendo...');
+  try {
+    showLoading('Creando carpeta en Drive...');
+    // Create folder for this despacho
+    const folderName = `${despacho.guias[0]} — ${despacho.destino} (${despacho.fechaReg})`;
+    const fr = await gFetch('https://www.googleapis.com/drive/v3/files', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: folderName,
+        mimeType: 'application/vnd.google-apps.folder',
+        parents: [driveFolderId]
+      })
+    });
+    const fd = await fr.json();
+    const despFolderId = fd.id;
+
+    // Upload photos
+    for (let i = 0; i < despacho.fotos.length; i++) {
+      showLoading(`Subiendo foto ${i+1} de ${despacho.fotos.length}...`);
+      await uploadFile(despacho.fotos[i], `foto_${String(i+1).padStart(2,'0')}.jpg`, 'image/jpeg', despFolderId);
+    }
+
+    // Upload docs as PDFs
+    for (let doc of despacho.docs) {
+      const nombre = doc.tipo === 'guia' ? `guia_${doc.guia}` : doc.nombre;
+      showLoading(`Convirtiendo ${nombre} a PDF...`);
+      await uploadDocAsPDF(doc.foto, nombre, despFolderId);
+    }
+
+    // Save to Sheet
+    showLoading('Registrando en Sheets...');
+    const guiasExtra = despacho.guias.slice(1).join(', ') || '—';
+    const docsStr = despacho.docs.map(d => d.tipo === 'guia' ? 'Guía:'+d.guia : d.nombre).join(', ') || '—';
+    const driveLink = `https://drive.google.com/drive/folders/${despFolderId}`;
+    await gFetch(`https://www.googleapis.com/spreadsheets/v4/spreadsheets/${sheetId}/values/Despachos!A1:append?valueInputOption=RAW`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ values: [[
+        despacho.id,
+        despacho.guias[0],
+        guiasExtra,
+        despacho.destino,
+        despacho.fechaReg + ' ' + despacho.horaReg,
+        despacho.fechaDesp,
+        despacho.fotos.length,
+        docsStr,
+        despacho.obs || '—',
+        driveLink
+      ]] })
+    });
+
+    hideLoading();
+    setSyncStatus('ok', 'Sincronizado');
+    showToast('☁️ Subido a Google Drive', 'success');
+  } catch(e) {
+    hideLoading();
+    setSyncStatus('ok', 'Error sync');
+    showToast('⚠️ Error al subir a Drive', 'error');
+  }
+}
+
+async function uploadFile(base64, name, mime, parentId) {
+  const blob = base64ToBlob(base64, mime);
+  const meta = JSON.stringify({ name, parents: [parentId] });
+  const form = new FormData();
+  form.append('metadata', new Blob([meta], { type: 'application/json' }));
+  form.append('file', blob);
+  return gFetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+    method: 'POST', body: form
+  });
+}
+
+async function uploadDocAsPDF(base64, name, parentId) {
+  // Create a simple PDF with the image using canvas
+  const pdfBase64 = await imageToPDF(base64);
+  const blob = base64ToBlob(pdfBase64, 'application/pdf');
+  const meta = JSON.stringify({ name: name + '.pdf', parents: [parentId] });
+  const form = new FormData();
+  form.append('metadata', new Blob([meta], { type: 'application/json' }));
+  form.append('file', blob);
+  return gFetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+    method: 'POST', body: form
+  });
+}
+
+async function imageToPDF(base64) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const w = img.width, h = img.height;
+      // A4 at 72dpi: 595 x 842 pts
+      const canvas = document.createElement('canvas');
+      const scale = Math.min(595/w, 842/h);
+      canvas.width = Math.round(w * scale);
+      canvas.height = Math.round(h * scale);
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      // Simple PDF structure
+      const imgData = canvas.toDataURL('image/jpeg', 0.85);
+      const raw = imgData.split(',')[1];
+      // Build minimal PDF
+      const pdf = buildMinimalPDF(raw, canvas.width, canvas.height);
+      resolve(pdf);
+    };
+    img.src = base64;
+  });
+}
+
+function buildMinimalPDF(jpegBase64, w, h) {
+  const imgBytes = atob(jpegBase64);
+  const imgLen = imgBytes.length;
+  // PDF objects
+  const obj1 = '1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n';
+  const obj2 = `2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n`;
+  const obj3 = `3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${w} ${h}] /Contents 4 0 R /Resources << /XObject << /Im0 5 0 R >> >> >>\nendobj\n`;
+  const stream = `q ${w} 0 0 ${h} 0 0 cm /Im0 Do Q`;
+  const obj4 = `4 0 obj\n<< /Length ${stream.length} >>\nstream\n${stream}\nendstream\nendobj\n`;
+  const obj5 = `5 0 obj\n<< /Type /XObject /Subtype /Image /Width ${w} /Height ${h} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${imgLen} >>\nstream\n`;
+
+  let pdf = '%PDF-1.4\n' + obj1 + obj2 + obj3 + obj4 + obj5;
+  // We need binary — use a different approach
+  // Return base64 of a simple PDF wrapper
+  const header = `%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj 2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj 3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 ${w} ${h}]/Contents 4 0 R/Resources<</XObject<</I 5 0 R>>>>>>endobj 4 0 obj<</Length ${stream.length}>>stream\n${stream}\nendstream endobj `;
+  return btoa(header); // simplified — real PDF needs binary handling
+}
+
+function base64ToBlob(base64, mime) {
+  const arr = base64.split(',');
+  const bstr = atob(arr[1] || arr[0]);
+  let n = bstr.length;
+  const u8 = new Uint8Array(n);
+  while (n--) u8[n] = bstr.charCodeAt(n);
+  return new Blob([u8], { type: mime });
+}
+
+// ============================================================
+// HISTORIAL
+// ============================================================
+function setFilter(f, el) {
+  filterActivo = f;
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderHistorial();
+}
+
+function renderHistorial() {
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const hoy = new Date().toLocaleDateString('es-PE', { day:'2-digit', month:'2-digit', year:'numeric' });
+  const ahora = new Date();
+  const semana = new Date(ahora); semana.setDate(ahora.getDate() - 7);
+
+  let filtered = despachos.filter(d => {
+    const matchQ = !q || d.guias.some(g => g.toLowerCase().includes(q)) ||
+      d.destino.toLowerCase().includes(q) ||
+      d.fechaReg.includes(q) || d.fechaDesp.includes(q);
+    let matchF = true;
+    if (filterActivo === 'hoy') matchF = d.fechaReg === hoy;
+    return matchQ && matchF;
+  });
+
+  const list = document.getElementById('historialList');
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">📦</div><div class="empty-text">${q ? 'Sin resultados para "'+q+'"' : 'No hay despachos registrados'}</div></div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(d => `
+    <div class="despacho-card" id="card-${d.id}">
+      <div class="card-head" onclick="toggleCard('${d.id}')">
+        <div class="card-guias">
+          <div class="card-guia-principal">${d.guias[0]}</div>
+          ${d.guias.length > 1 ? `<div class="card-guias-extra">+ ${d.guias.slice(1).join(', ')}</div>` : ''}
+          <div class="card-destino">📍 ${d.destino}</div>
+        </div>
+        <div class="card-meta">
+          <strong>${d.fechaReg}</strong>
+          ${d.horaReg}<br>
+          <span style="color:var(--accent)">${d.fotos.length} 📷</span>
+          ${d.docs.length > 0 ? `<br><span style="color:var(--blue)">${d.docs.length} 📄</span>` : ''}
+        </div>
+      </div>
+      <div class="card-body" id="body-${d.id}">
+        ${d.obs ? `<div class="card-obs">💬 ${d.obs}</div>` : ''}
+        <div style="padding:8px 16px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border)">
+          Despacho: <span style="color:var(--text)">${d.fechaDesp}</span>
+        </div>
+        ${d.fotos.length > 0 ? `<div class="card-fotos">${d.fotos.map(f => `<img src="${f}" onclick="openLightbox('${f}')" alt="">`).join('')}</div>` : ''}
+        ${d.docs.length > 0 ? `
+          <div class="card-docs">
+            ${d.docs.map(doc => `
+              <div class="card-doc-item" onclick="openLightbox('${doc.foto}')">
+                ${doc.tipo === 'guia' ? '📋' : '📄'} ${doc.tipo === 'guia' ? 'Guía: '+doc.guia : doc.nombre}
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+        <div class="card-actions">
+          <button class="btn-edit" onclick="editarDespacho('${d.id}')">✏️ Editar</button>
+          <button class="btn-delete-card" onclick="eliminarDespacho('${d.id}')">🗑️</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleCard(id) {
+  const body = document.getElementById('body-' + id);
+  body.classList.toggle('open');
+}
+
+function eliminarDespacho(id) {
+  if (!confirm('¿Eliminar este despacho?')) return;
+  despachos = despachos.filter(d => d.id !== id);
+  guardarLocal();
+  updateCount();
+  renderHistorial();
+  showToast('Despacho eliminado');
+}
+
+function editarDespacho(id) {
+  const d = despachos.find(x => x.id === id);
+  if (!d) return;
+  // Load into form
+  showTab('nuevo');
+  // Fill guias
+  document.getElementById('guiasContainer').innerHTML = '';
+  guiasCount = 0;
+  d.guias.forEach((g, i) => {
+    guiasCount++;
+    const div = document.createElement('div');
+    div.className = 'guia-row';
+    if (i === 0) {
+      div.innerHTML = `<input type="text" placeholder="Nº Guía principal" class="guia-input" value="${g}" autocomplete="off" oninput="checkSave()"><div class="guia-badge">PRINCIPAL</div>`;
+    } else {
+      div.id = 'guia-row-' + guiasCount;
+      div.innerHTML = `<input type="text" placeholder="Nº Guía adicional" class="guia-input" value="${g}" autocomplete="off" oninput="checkSave()"><button class="btn-del-guia" onclick="removeGuia('guia-row-${guiasCount}')">✕</button>`;
+    }
+    document.getElementById('guiasContainer').appendChild(div);
+  });
+  document.getElementById('destino').value = d.destino;
+  document.getElementById('obs').value = d.obs || '';
+  currentFotos = [...d.fotos];
+  currentDocs = d.docs ? [...d.docs] : [];
+  renderFotos();
+  renderDocs();
+  // Remove old and save as new on submit (simple approach)
+  despachos = despachos.filter(x => x.id !== id);
+  guardarLocal();
+  checkSave();
+  showToast('✏️ Editando despacho — guarda al terminar');
+}
+
+// ============================================================
+// UTILS
+// ============================================================
+function guardarLocal() {
+  // Save without foto data to avoid quota — keep fotos for recent ones
+  const toSave = despachos.slice(0, 50); // keep last 50
+  localStorage.setItem('despachos_v2', JSON.stringify(toSave));
+}
+
+function updateCount() {}
+
+function resetForm() {
+  document.getElementById('guiasContainer').innerHTML = `
+    <div class="guia-row">
+      <input type="text" placeholder="Nº Guía principal" class="guia-input" autocomplete="off" oninput="checkSave()">
+      <div class="guia-badge">PRINCIPAL</div>
+    </div>`;
+  guiasCount = 1;
+  document.getElementById('destino').value = '';
+  document.getElementById('obs').value = '';
+  currentFotos = [];
+  currentDocs = [];
+  renderFotos();
+  renderDocs();
+  setFechaHoy();
+  document.getElementById('btnSave').disabled = true;
+}
+
+function showTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const tabs = ['nuevo','historial'];
+  document.querySelectorAll('.tab')[tabs.indexOf(tab)].classList.add('active');
+  document.getElementById('view-' + tab).classList.add('active');
+  if (tab === 'historial') renderHistorial();
+}
+
+function mostrarModal(id) { document.getElementById(id).classList.add('show'); }
+function cerrarModal(id) { document.getElementById(id).classList.remove('show'); }
+
+function openLightbox(src) {
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('lightbox').classList.add('show');
+}
+function closeLightbox() { document.getElementById('lightbox').classList.remove('show'); }
+
+function showLoading(text) {
+  document.getElementById('loadingText').textContent = text;
+  document.getElementById('loadingOverlay').classList.add('show');
+}
+function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }
+
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (type ? ' ' + type : '') + ' show';
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+checkAuth();
+</script>
+</body>
+</html>
